@@ -1,3 +1,9 @@
-# Northcoders News API
+# Gilaine's News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+## Setup - create environment variables to connect databases locally
+
+Create the following files to store environment variables:
+- .env.test (PGDATABASE=nc_news_test)
+- .env.development (PGDATABASE=nc_news)
+
+Ensure the above files are ignored (.gitignore)
