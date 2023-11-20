@@ -24,6 +24,9 @@ describe('/api/topics', () => {
             })
         })
     })
+})
+
+describe('all', () => {
     test('Error 404 - path not found', () => {
         return request(app)
         .get('/api/toppiks')

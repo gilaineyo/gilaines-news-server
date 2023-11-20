@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
-const { getTopics, handleBadPaths } = require('./controllers/app.controllers')
-const { handleServerErrors } = require('./error-handlers/errors')
+const { getTopics } = require('./controllers/app.controllers')
+const { handleServerErrors, handleBadPaths } = require('./error-handlers/errors')
 
 
 app.get('/api/topics', getTopics)
