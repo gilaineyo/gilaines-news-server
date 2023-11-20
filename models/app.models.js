@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const fs = require('fs/promises')
 
 exports.selectTopics = () => {
     return db.query(`SELECT * FROM topics`)
@@ -12,5 +13,13 @@ exports.selectArticle = (article_id) => {
         WHERE article_id = $1`, [+article_id])
     .then(({rows}) => {
         return rows[0]
+    })
+}
+
+exports.readEndpoints = () => {
+    return fs.readFile(`${__dirname}/../endpoints.json`)
+    .then((result) => {
+        const responseBody = JSON.parse(result)
+        return responseBody
     })
 }
