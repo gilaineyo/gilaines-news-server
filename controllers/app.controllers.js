@@ -11,6 +11,10 @@ exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params
     selectArticle(article_id)
     .then((article) => {
+        if (!article) {
+            return Promise.reject({ status: 404, msg: 'Article does not exist' })
+        }
         res.status(200).send({ article: article })
     })
+    .catch(next)
 }

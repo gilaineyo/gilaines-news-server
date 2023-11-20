@@ -56,4 +56,20 @@ describe('/api/articles/:article_id', () => {
             expect(article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
         })
     })
+    test('GET 400 - id malformed', () => {
+        return request(app)
+        .get('/api/articles/banana')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('GET 404 - article does not exist', () => {
+        return request(app)
+        .get('/api/articles/99999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article does not exist')
+        })
+    })
 })
