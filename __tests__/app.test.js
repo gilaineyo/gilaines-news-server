@@ -24,4 +24,12 @@ describe('/api/topics', () => {
             })
         })
     })
+    test('Error 404 - path not found', () => {
+        return request(app)
+        .get('/api/toppiks')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Path not found')
+        })
+    })
 })
