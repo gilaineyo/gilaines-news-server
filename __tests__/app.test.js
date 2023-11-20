@@ -3,6 +3,7 @@ const request = require('supertest')
 const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const testData = require('../db/data/test-data/index')
+const endpointFile = require('../endpoints.json')
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -35,10 +36,7 @@ describe('/api', () => {
             const { endpoints } = body
             expect(typeof endpoints).toBe('object')
             expect(Array.isArray(endpoints)).toBe(false)
-            expect(endpoints).toMatchObject({
-                "GET /api": { "description": expect.any(String) },
-                "GET /api/topics": { "description": expect.any(String), "queries": [], "exampleResponse": { "topics": [{ "slug": expect.any(String), "description": expect.any(String) }] }},
-            })
+            expect(endpoints).toEqual(endpointFile)
         }) 
     })
 })
