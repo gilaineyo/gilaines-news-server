@@ -1,3 +1,4 @@
+
 const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles, insertComment } = require('../models/app.models')
 const { checkArticleExists } = require('../models/article.models')
 
@@ -31,7 +32,6 @@ exports.getEndpoints = (req, res, next) => {
     })
 }
 
-
 exports.getCommentsByArticle = (req, res, next) => {
     const { article_id } = req.params
     const commentsPromises = [selectArticleComments(article_id), checkArticleExists(article_id)]
@@ -39,6 +39,14 @@ exports.getCommentsByArticle = (req, res, next) => {
     .then((resolvedPromises) => {
         const result = resolvedPromises[0]
         res.status(200).send({ comments: result })
+    })
+    .catch(next)
+}
+
+exports.getArticles = (req, res, next) => {
+    selectArticles()
+    .then((results) => {
+        res.status(200).send({ articles: results })
     })
     .catch(next)
 }

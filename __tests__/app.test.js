@@ -88,6 +88,52 @@ describe('/api/articles/:article_id', () => {
     })
 })
 
+describe('/api/articles/:article_id/comments', () => {
+    test('GET 200 - responds with all comments for a given article', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body}) => {
+            const { comments } = body
+            expect(comments).toHaveLength(11)
+            expect(comments).toBeSortedBy('created_at', { descending: true })
+            comments.forEach((comment) => {
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: 1
+                })
+            })
+        })
+    })
+    test('GET 200 - responds with empty array for valid article with no comments', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.comments).toEqual([])
+        })
+    })
+    test('GET 400 - article ID malformed', () => {
+        return request(app)
+        .get('/api/articles/banana/comments')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('GET 404 - article does not exist', () => {
+        return request(app)
+        .get('/api/articles/99999/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article does not exist')
+        })
+    })
+})
 
 describe('/api/articles', () => {
     test('GET 200 - responds with an array of article objects sorted in descending date order', () => {
