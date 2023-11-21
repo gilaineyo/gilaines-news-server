@@ -3,7 +3,6 @@ const request = require('supertest')
 const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const testData = require('../db/data/test-data/index')
-const { convertTimeStampToDate } = require('../db/seeds/utils')
 const endpointFile = require('../endpoints.json')
 
 beforeEach(() => seed(testData));
@@ -88,3 +87,32 @@ describe('/api/articles/:article_id', () => {
         })
     })
 })
+
+describe('/api/articles/:article_id/comments', () => {
+    test('GET 200 - responds with all comments for a given article', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body}) => {
+            const { comments } = body
+            expect(comments).toHaveLength(11)
+            expect(comments).toBeSortedBy('created_at', { descending: true })
+            comments.forEach((comment) => {
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: 1
+                })
+            })
+        })
+    })
+})
+
+/*
+Consider what errors could occur with this endpoint, and make sure to test for them.
+
+Remember to add a description of this endpoint to your /api endpoint.
+*/
