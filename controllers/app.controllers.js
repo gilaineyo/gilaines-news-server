@@ -1,4 +1,4 @@
-const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles } = require('../models/app.models')
+const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle } = require('../models/app.models')
 const { checkArticleExists } = require('../models/article.models')
 
 exports.getTopics = (req, res, next) => {
@@ -39,5 +39,14 @@ exports.getArticles = (req, res, next) => {
     selectArticles()
     .then((results) => {
         res.status(200).send({ articles: results })
+    })
+}
+
+exports.patchArticleById = (req, res, next) => {
+    const { inc_votes } = req.body
+    const { article_id } = req.params
+    updateArticle(article_id, inc_votes)
+    .then((result) => {
+        res.status(200).send({ article: result })
     })
 }
