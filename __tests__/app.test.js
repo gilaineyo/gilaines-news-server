@@ -148,22 +148,34 @@ describe('/api/articles/:article_id/comments', () => {
             })
         })
     })
+    test('POST 400 - PSQL error: comment malformed', () => {
+        const newComment = { body: "This article is great!" }
+        return request(app)
+        .post('/api/articles/banana/comments')
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('POST 400 - PSQL error: failed schema validation', () => {
+        const newComment = { username: 4, body: "This article is great!" }
+        return request(app)
+        .post('/api/articles/banana/comments')
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        }) 
+    })
+    test('POST 404 - article does not exist', () => {
+        const newComment = { username: 4, body: "This article is great!" }
+        return request(app)
+        .post('/api/articles/99999/comments')
+        .send(newComment)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article does not exist')
+        })
+    })
 })
-/*
-Should:
-
-be available on /api/articles/:article_id/comments.
-add a comment for an article.
-Request body accepts:
-
-an object with the following properties:
-username
-body
-Responds with:
-
-the posted comment.
-Consider what errors could occur with this endpoint, and make sure to test for them.
-
-Remember to add a description of this endpoint to your /api endpoint.
-*/
-
