@@ -109,10 +109,28 @@ describe('/api/articles/:article_id/comments', () => {
             })
         })
     })
+    test('GET 200 - responds with empty array for valid article with no comments', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.comments).toEqual([])
+        })
+    })
+    test('GET 400 - article ID malformed', () => {
+        return request(app)
+        .get('/api/articles/banana/comments')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('GET 404 - article does not exist', () => {
+        return request(app)
+        .get('/api/articles/99999/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article does not exist')
+        })
+    })
 })
-
-/*
-Consider what errors could occur with this endpoint, and make sure to test for them.
-
-Remember to add a description of this endpoint to your /api endpoint.
-*/
