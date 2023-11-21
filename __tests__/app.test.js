@@ -228,3 +228,54 @@ describe('/api/articles', () => {
         })
     })
 })
+
+describe('/api/articles/:article_id/comments', () => {
+    test('POST 201 - post a comment to an article', () => {
+        const newComment = { username: "icellusedkars", body: "This article is great!" }
+        return request(app)
+        .post('/api/articles/2/comments')
+        .send(newComment)
+        .expect(201)
+        .then(({body}) => {
+            const { comment } = body
+            expect(comment).toMatchObject({
+                comment_id: expect.any(Number),
+                article_id: 2,
+                author: "icellusedkars",
+                body: "This article is great!",
+                votes: 0,
+                created_at: expect.any(String)
+            })
+        })
+    })
+    test('POST 400 - PSQL error: comment malformed', () => {
+        const newComment = { body: "This article is great!" }
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('POST 400 - PSQL error: failed schema validation on article ID', () => {
+        const newComment = { username: "icellusedkars", body: "This article is great!" }
+        return request(app)
+        .post('/api/articles/banana/comments')
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        }) 
+    })
+    test('POST 404 - article does not exist', () => {
+        const newComment = { username: "icellusedkars", body: "This article is great!" }
+        return request(app)
+        .post('/api/articles/99999/comments')
+        .send(newComment)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article does not exist')
+        })
+    })
+})
