@@ -3,7 +3,6 @@ const request = require('supertest')
 const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const testData = require('../db/data/test-data/index')
-const { convertTimeStampToDate } = require('../db/seeds/utils')
 const endpointFile = require('../endpoints.json')
 
 beforeEach(() => seed(testData));
@@ -85,6 +84,47 @@ describe('/api/articles/:article_id', () => {
         .expect(404)
         .then(({body}) => {
             expect(body.msg).toBe('Article does not exist')
+        })
+    })
+})
+
+
+describe('/api/articles', () => {
+    test('GET 200 - responds with an array of article objects sorted in descending date order', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(Array.isArray(articles)).toBe(true)
+            expect(articles).toHaveLength(13)
+            expect(articles).toBeSorted('created_at', { descending: true })
+            articles.forEach((article) => {
+                const keys = Object.keys(article)
+                expect(keys.includes('body')).toBe(false)
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(String),
+                })
+            })
+        })
+    })
+    test('GET 200 - calculates correct comment count', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            const articleOne = articles.indexOf(articles.find((article) => {
+                return article.article_id === 1
+            }))
+            expect(articles[articleOne].comment_count).toBe('11')
         })
     })
 })

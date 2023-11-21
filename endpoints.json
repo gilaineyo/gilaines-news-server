@@ -15,6 +15,15 @@
     "exampleResponse": {
       "articles": [
         {
+          "title": "Seven inspirational thought leaders from Manchester UK",
+          "topic": "mitch",
+          "author": "rogersop",
+          "body": "Who are we kidding, there is only one, and it's Mitch!",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "comment_count": 3
+        },
+        {
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
