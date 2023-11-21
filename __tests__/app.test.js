@@ -90,7 +90,8 @@ describe('/api/articles/:article_id', () => {
         return request(app)
         .patch('/api/articles/1')
         .send({ inc_votes: 27 })
-        .expect(({body}) => {
+        .expect(200)
+        .then(({body}) => {
             const { article } = body
             const { author, title, article_id, topic, created_at, votes, article_img_url } = article
             expect(author).toBe("butter_bridge")
@@ -107,9 +108,36 @@ describe('/api/articles/:article_id', () => {
         return request(app)
         .patch('/api/articles/1')
         .send({ inc_votes: -27 })
-        .expect(({body}) => {
-            const { article } = body
-            expect(article.votes).toBe(73)
+        .expect(200)
+        .then(({body}) => {
+            expect(body.article.votes).toBe(73)
+        })
+    })
+    test('PATCH 400 - votes is not a number (failed schema validation', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: 'oops' })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('PATCH 400 - article id is invalid', () => {
+        return request(app)
+        .patch('/api/articles/oops')
+        .send({ inc_votes: 27 })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('PATCH 404 - article does not exist', () => {
+        return request(app)
+        .patch('/api/articles/99999')
+        .send({ inc_votes: 27 })
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article does not exist')
         })
     })
 })
