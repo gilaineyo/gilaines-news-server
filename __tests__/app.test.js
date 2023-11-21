@@ -197,15 +197,15 @@ describe('/api/articles/:article_id/comments', () => {
     test('POST 400 - PSQL error: comment malformed', () => {
         const newComment = { body: "This article is great!" }
         return request(app)
-        .post('/api/articles/banana/comments')
+        .post('/api/articles/1/comments')
         .send(newComment)
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe('Bad request')
         })
     })
-    test('POST 400 - PSQL error: failed schema validation', () => {
-        const newComment = { username: 4, body: "This article is great!" }
+    test('POST 400 - PSQL error: failed schema validation on article ID', () => {
+        const newComment = { username: "icellusedkars", body: "This article is great!" }
         return request(app)
         .post('/api/articles/banana/comments')
         .send(newComment)
@@ -215,7 +215,7 @@ describe('/api/articles/:article_id/comments', () => {
         }) 
     })
     test('POST 404 - article does not exist', () => {
-        const newComment = { username: 4, body: "This article is great!" }
+        const newComment = { username: "icellusedkars", body: "This article is great!" }
         return request(app)
         .post('/api/articles/99999/comments')
         .send(newComment)
