@@ -2,7 +2,7 @@ const db = require('../db/connection')
 const fs = require('fs/promises')
 
 exports.selectTopics = () => {
-    return db.query(`SELECT * FROM topics`)
+    return db.query(`SELECT * FROM topics;`)
     .then(({rows}) => {
         return rows
     })
@@ -32,6 +32,19 @@ exports.selectArticleComments = (article_id) => {
         WHERE article_id = $1
         ORDER BY created_at DESC
         ;`, [article_id])
+    .then(({rows}) => {
+        return rows
+    })
+}
+
+exports.selectArticles = () => {
+    return db.query(`SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) AS comment_count
+        FROM articles
+        LEFT JOIN comments
+        ON comments.article_id = articles.article_id
+        GROUP BY articles.article_id
+        ORDER BY articles.created_at DESC
+        ;`)
     .then(({rows}) => {
         return rows
     })

@@ -1,4 +1,4 @@
-const { selectTopics, selectArticle, readEndpoints, selectArticleComments } = require('../models/app.models')
+const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles } = require('../models/app.models')
 const { checkArticleExists } = require('../models/article.models')
 
 exports.getTopics = (req, res, next) => {
@@ -33,4 +33,11 @@ exports.getCommentsByArticle = (req, res, next) => {
         res.status(200).send({ comments: result })
     })
     .catch(next)
+}
+
+exports.getArticles = (req, res, next) => {
+    selectArticles()
+    .then((results) => {
+        res.status(200).send({ articles: results })
+    })
 }
