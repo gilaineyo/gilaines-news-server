@@ -86,6 +86,60 @@ describe('/api/articles/:article_id', () => {
             expect(body.msg).toBe('Article does not exist')
         })
     })
+    test('PATCH 200 - article successfully updated', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: 27 })
+        .expect(200)
+        .then(({body}) => {
+            const { article } = body
+            const { author, title, article_id, topic, created_at, votes, article_img_url } = article
+            expect(author).toBe("butter_bridge")
+            expect(title).toBe("Living in the shadow of a great man")
+            expect(article_id).toBe(1)
+            expect(article.body).toBe("I find this existence challenging")
+            expect(topic).toBe("mitch")
+            expect(new Date(created_at)).toEqual(new Date(1594329060000))
+            expect(votes).toBe(127)
+            expect(article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+        })
+    })
+    test('PATCH 200 - article downvoted', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: -27 })
+        .expect(200)
+        .then(({body}) => {
+            expect(body.article.votes).toBe(73)
+        })
+    })
+    test('PATCH 400 - votes is not a number (failed schema validation', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: 'oops' })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('PATCH 400 - article id is invalid', () => {
+        return request(app)
+        .patch('/api/articles/oops')
+        .send({ inc_votes: 27 })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('PATCH 404 - article does not exist', () => {
+        return request(app)
+        .patch('/api/articles/99999')
+        .send({ inc_votes: 27 })
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article does not exist')
+        })
+    })
 })
 
 describe('/api/articles/:article_id/comments', () => {

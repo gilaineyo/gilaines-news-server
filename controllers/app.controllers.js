@@ -1,5 +1,4 @@
-
-const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles, insertComment } = require('../models/app.models')
+const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment } = require('../models/app.models')
 const { checkArticleExists } = require('../models/article.models')
 
 exports.getTopics = (req, res, next) => {
@@ -50,6 +49,20 @@ exports.getArticles = (req, res, next) => {
     })
     .catch(next)
 }
+
+exports.patchArticleById = (req, res, next) => {
+    const { inc_votes } = req.body
+    const { article_id } = req.params
+    return checkArticleExists(article_id)
+    .then(() => {
+        return updateArticle(article_id, inc_votes)
+    })
+    .then((result) => {
+        res.status(200).send({ article: result })
+    })
+    .catch(next)
+}
+
 
 exports.postComment = (req, res, next) => {
     const comment = req.body
