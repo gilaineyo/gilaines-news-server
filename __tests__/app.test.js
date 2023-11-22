@@ -227,6 +227,16 @@ describe('/api/articles', () => {
             expect(articles[articleOne].comment_count).toBe('11')
         })
     })
+    test('GET 200 (topic query) - responds with array of articles filtered by topic', () => {
+        return request(app)
+        .get('/api/articles?topic=cats')
+        .expect(200)
+        .then(({body}) => {
+            const {articles} = body
+            expect(articles).toHaveLength(1)
+            expect(articles[0].topic).toBe('cats')
+        })
+    })
 })
 
 describe('/api/articles/:article_id/comments', () => {
