@@ -279,6 +279,7 @@ describe('/api/articles/:article_id/comments', () => {
         })
     })
 })
+
 describe('/api/users', () => {
     test('GET 200 - returns array of all users', () => {
         return request(app)
@@ -295,6 +296,30 @@ describe('/api/users', () => {
                     avatar_url: expect.any(String)
                 })
             })
+        })
+    })
+})
+
+describe('/api/comments/:comment_id', () => {
+    test('DELETE 204 - deletes specified comment', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+    })
+    test('DELETE 404 - comment does not exist', () => {
+        return request(app)
+        .delete('/api/comments/99999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Comment does not exist')
+        })
+    })
+    test('DELETE 400 - PSQL error: invalid comment ID', () => {
+        return request(app)
+        .delete('/api/comments/yikes')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
         })
     })
 })

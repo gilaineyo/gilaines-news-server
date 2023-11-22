@@ -1,17 +1,11 @@
-const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers } = require('../models/app.models')
+const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment } = require('../models/app.models')
 const { checkArticleExists } = require('../models/article.models')
+
 
 exports.getTopics = (req, res, next) => {
     selectTopics()
     .then((result) => {
         res.status(200).send({ topics: result })
-    })
-}
-
-exports.getArticles = (req, res, next) => {
-    selectArticles()
-    .then((results) => {
-        res.status(200).send({ articles: results })
     })
 }
 
@@ -78,9 +72,20 @@ exports.postComment = (req, res, next) => {
     .catch(next)
 }
 
+
 exports.getUsers = (req, res, next) => {
     return selectUsers()
     .then((result) => {
         res.status(200).send({ users: result })
     })
+    .catch(next)
+}
+
+exports.deleteComment = (req, res, next) => {
+    const { comment_id } = req.params
+    return removeComment(comment_id)
+    .then(() => {
+        res.status(204).send()
+    })
+    .catch(next)
 }
