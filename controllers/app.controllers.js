@@ -1,5 +1,5 @@
 const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment } = require('../models/app.models')
-const { checkArticleExists } = require('../models/article.models')
+const { checkArticleExists, checkTopicExists } = require('../models/article.models')
 
 exports.getTopics = (req, res, next) => {
     selectTopics()
@@ -37,7 +37,10 @@ exports.getCommentsByArticle = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
     const { topic } = req.query
-    selectArticles(topic)
+    return checkTopicExists(topic)
+    .then(() => {
+        return selectArticles(topic)
+    })
     .then((results) => {
         res.status(200).send({ articles: results })
     })

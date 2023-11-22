@@ -237,6 +237,23 @@ describe('/api/articles', () => {
             expect(articles[0].topic).toBe('cats')
         })
     })
+    test('GET 200 (topic query) - responds with an empty array for topic with no articles', () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({body}) => {
+            const {articles} = body
+            expect(articles).toEqual([])
+        })
+    })
+    test('GET 404 (topic query) - topic does not exist', () => {
+        return request(app)
+        .get('/api/articles?topic=banana')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Topic does not exist')
+        })
+    })
 })
 
 describe('/api/articles/:article_id/comments', () => {
