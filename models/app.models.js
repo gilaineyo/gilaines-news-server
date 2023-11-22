@@ -71,6 +71,13 @@ exports.insertComment = (comment) => {
     })
 }
 
+exports.selectUsers = () => {
+    return db.query(`SELECT * FROM users;`)
+    .then(({rows}) => {
+        return rows
+    })
+}
+
 exports.removeComment = (comment_id) => {
     return db.query(`DELETE FROM comments
         WHERE comment_id = $1

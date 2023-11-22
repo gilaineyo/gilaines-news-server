@@ -280,6 +280,26 @@ describe('/api/articles/:article_id/comments', () => {
     })
 })
 
+describe('/api/users', () => {
+    test('GET 200 - returns array of all users', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({body}) => {
+            const { users } = body
+            expect(Array.isArray(users)).toBe(true)
+            expect(users).toHaveLength(4)
+            users.forEach((user) => {
+                expect(user).toMatchObject({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            })
+        })
+    })
+})
+
 describe('/api/comments/:comment_id', () => {
     test('DELETE 204 - deletes specified comment', () => {
         return request(app)
