@@ -1,5 +1,5 @@
-const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment } = require('../models/app.models')
-const { checkArticleExists } = require('../models/article.models')
+const { selectTopics, selectArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, removeComment } = require('../models/app.models')
+const { checkArticleExists } = require('../models/check.models')
 
 exports.getTopics = (req, res, next) => {
     selectTopics()
@@ -74,6 +74,15 @@ exports.postComment = (req, res, next) => {
     })
     .then((result) => {
         res.status(201).send({ comment: result })
+    })
+    .catch(next)
+}
+
+exports.deleteComment = (req, res, next) => {
+    const { comment_id } = req.params
+    return removeComment(comment_id)
+    .then(() => {
+        res.status(204).send()
     })
     .catch(next)
 }
