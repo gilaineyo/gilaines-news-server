@@ -1,5 +1,5 @@
 const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment } = require('../models/app.models')
-const { checkArticleExists, checkTopicExists } = require('../models/article.models')
+const { checkArticleExists, checkTopicExists } = require('../models/check.models')
 
 
 exports.getTopics = (req, res, next) => {
