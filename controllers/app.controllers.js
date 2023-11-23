@@ -1,4 +1,4 @@
-const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment } = require('../models/app.models')
+const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, selectSingleArticleWithComments } = require('../models/app.models')
 const { checkArticleExists, checkTopicExists } = require('../models/check.models')
 
 

@@ -70,6 +70,24 @@ describe('/api/articles/:article_id', () => {
             expect(article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
         })
     })
+    test('GET 200 (comment count) - response object contains comment count', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({body}) => {
+            const { article } = body
+            expect(article.comment_count).toBe('11')
+        })
+    })
+    test('GET 200 (comment count) - response object comment count is 0 for article with no comments', () => {
+        return request(app)
+        .get('/api/articles/2')
+        .expect(200)
+        .then(({body}) => {
+            const { article } = body
+            expect(article.comment_count).toBe('0')
+        })
+    })
     test('GET 400 - id malformed', () => {
         return request(app)
         .get('/api/articles/banana')
