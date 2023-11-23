@@ -79,6 +79,15 @@ describe('/api/articles/:article_id', () => {
             expect(article.comment_count).toBe('11')
         })
     })
+    test('GET 200 (comment count) - response object comment count is 0 for article with no comments', () => {
+        return request(app)
+        .get('/api/articles/2')
+        .expect(200)
+        .then(({body}) => {
+            const { article } = body
+            expect(article.comment_count).toBe('0')
+        })
+    })
     test('GET 400 - id malformed', () => {
         return request(app)
         .get('/api/articles/banana')
