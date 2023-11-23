@@ -78,3 +78,22 @@ exports.insertComment = (comment) => {
         return rows[0]
     })
 }
+
+exports.selectUsers = () => {
+    return db.query(`SELECT * FROM users;`)
+    .then(({rows}) => {
+        return rows
+    })
+}
+
+exports.removeComment = (comment_id) => {
+    return db.query(`DELETE FROM comments
+        WHERE comment_id = $1
+        RETURNING *;`, [comment_id])
+    .then(({rows}) => {
+        if(!rows.length) {
+            return Promise.reject({ status: 404, msg: "Comment does not exist"})
+        }
+        return Promise.resolve()
+    })
+}
