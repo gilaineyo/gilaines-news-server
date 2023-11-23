@@ -8,8 +8,8 @@ You can access a list of endpoints at https://gilaines-news-server.onrender.com/
 
 ## Dependencies
 
-- Node.js (19.x?)
-- Postgres (??)
+- Node.js (20.5.0)
+- Postgres (14.9)
 
 ## Setup
 
