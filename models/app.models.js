@@ -8,7 +8,7 @@ exports.selectTopics = () => {
     })
 }
 
-exports.selectArticle = (article_id) => {
+exports.selectSingleArticle = (article_id) => {
     return db.query(`SELECT * FROM articles
         WHERE article_id = $1`, [article_id])
     .then(({rows}) => {
@@ -37,14 +37,22 @@ exports.selectArticleComments = (article_id) => {
     })
 }
 
-exports.selectArticles = () => {
-    return db.query(`SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) AS comment_count
+exports.selectArticles = (topic) => {
+    const queryValues = []
+    let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) AS comment_count
         FROM articles
         LEFT JOIN comments
-        ON comments.article_id = articles.article_id
-        GROUP BY articles.article_id
-        ORDER BY articles.created_at DESC
-        ;`)
+        ON comments.article_id = articles.article_id `
+    
+    if (topic) {
+        queryString += `WHERE articles.topic = $1 `
+        queryValues.push(topic)
+    }
+    
+    queryString += `GROUP BY articles.article_id
+        ORDER BY articles.created_at DESC;`
+
+    return db.query(queryString, queryValues)
     .then(({rows}) => {
         return rows
     })
