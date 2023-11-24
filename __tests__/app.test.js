@@ -460,6 +460,56 @@ describe('/api/comments/:comment_id', () => {
         .then(({body}) => {
             expect(body.msg).toBe('Bad request')
         })
+    })    
+    test('PATCH 200 - updates votes on a comment given the comment ID', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then(({body}) => {
+            const { comment } = body
+            const { comment_id, votes, created_at, author, article_id } = comment
+            expect(comment.body).toBe("Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!")
+            expect(comment_id).toBe(1)
+            expect(votes).toBe(17)
+            expect(new Date(created_at)).toEqual(new Date(1586179020000))
+            expect(author).toBe('butter_bridge')
+            expect(article_id).toBe(9)
+        })
+    })
+    test('PATCH 200 - comment downvoted', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({ inc_votes: -1 })
+        .expect(200)
+        .then(({body}) => {
+            const { comment } = body
+            expect(comment.votes).toBe(15)
+        })
+    })
+    test('PATCH 400 - votes is not a number (failed schema validation', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({ inc_votes: 'oops' })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('PATCH 404 - comment does not exist', () => {
+        return request(app)
+        .patch('/api/comments/99999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Comment does not exist')
+        })
+    })
+    test('PATCH 400 - PSQL error: invalid comment ID', () => {
+        return request(app)
+        .patch('/api/comments/yikes')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
     })
 })
-

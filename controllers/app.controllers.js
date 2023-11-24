@@ -1,5 +1,6 @@
-const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, selectSingleUser } = require('../models/app.models')
-const { checkArticleExists, checkTopicExists } = require('../models/check.models')
+const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, updateComment, selectSingleUser } = require('../models/app.models')
+const { checkArticleExists, checkTopicExists, checkCommentExists } = require('../models/check.models')
+
 
 
 exports.getTopics = (req, res, next) => {
@@ -90,6 +91,19 @@ exports.deleteComment = (req, res, next) => {
     return removeComment(comment_id)
     .then(() => {
         res.status(204).send()
+    })
+    .catch(next)
+}
+
+exports.patchComment = (req, res, next) => {
+    const { comment_id } = req.params
+    const { inc_votes } = req.body
+    return checkCommentExists(comment_id)
+    .then(() => {
+        return updateComment(comment_id, inc_votes)
+    })
+    .then((comment) => {
+        res.status(200).send({ comment: comment })
     })
     .catch(next)
 }
