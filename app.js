@@ -7,10 +7,7 @@ const apiRouter = require('./routers/api-router');
 
 app.use(express.json())
 
-app.patch('/api/comments/:comment_id', patchComment)
-
 app.use('/api', apiRouter);
-
 
 app.all('*', handleBadPaths)
 
