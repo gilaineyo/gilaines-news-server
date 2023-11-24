@@ -37,10 +37,10 @@ exports.getCommentsByArticle = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    const { topic } = req.query
+    const { topic, sort_by='created_at', order='desc' } = req.query
     return checkTopicExists(topic)
     .then(() => {
-        return selectArticles(topic)
+        return selectArticles(topic, sort_by, order)
     })
     .then((results) => {
         res.status(200).send({ articles: results })
