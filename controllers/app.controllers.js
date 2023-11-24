@@ -1,5 +1,5 @@
 const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, updateComment, selectSingleUser, insertNewArticle } = require('../models/app.models')
-const { checkArticleExists, checkTopicExists, checkCommentExists } = require('../models/check.models')
+const { checkArticleExists, checkTopicExists, checkCommentExists, checkUserExists } = require('../models/check.models')
 
 
 
@@ -118,9 +118,16 @@ exports.getUserByUsername = (req, res, next) => {
 }
 
 exports.postNewArticle = (req, res, next) => {
-    const { author, title, body, topic, article_img_url } = req.body
-    return insertNewArticle(author, title, body, topic, article_img_url)
+    const { author, title, body, topic, article_img_url="https://pixabay.com/photos/question-question-mark-opinion-poll-2736480/" } = req.body
+    return checkUserExists(author)
+    .then(() => {
+        return checkTopicExists(topic, author)
+    })
+    .then(() => {
+        return insertNewArticle(author, title, body, topic, article_img_url)
+    })
     .then((article) => {
         res.status(201).send({ article: article })
     })
+    .catch(next)
 }

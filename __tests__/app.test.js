@@ -364,26 +364,48 @@ describe('/api/articles', () => {
             })
         })
     })
+    test('POST 201 - adds default article_img_url if not provided', () => {
+        const newArticle = { author: 'icellusedkars', title: 'my two angels', body: 'Ubik and Mopsy love each other really.', topic: 'cats' }
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(201)
+        .then(({body}) => {
+            const { article } = body
+            expect(article.article_img_url).toBe("https://pixabay.com/photos/question-question-mark-opinion-poll-2736480/")
+        })
+    })
+    test('POST 400 - author is not a user', () => {
+        const newArticle = { author: 'gilaine', title: 'my two angels', body: 'Ubik and Mopsy love each other really.', topic: 'cats', article_img_url: "https://cdn.pixabay.com/photo/2015/02/14/10/16/cat-636172_1280.jpg" }
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('User does not exist')
+        })
+    })
+    test('POST 400 - topic is not a valid topic', () => {
+        const newArticle = { author: 'icellusedkars', title: 'my two angels', body: 'Ubik and Mopsy love each other really.', topic: 'dogs', article_img_url: "https://cdn.pixabay.com/photo/2015/02/14/10/16/cat-636172_1280.jpg" }
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Topic does not exist')
+        })
+    })
+    test('POST 400 - PSQL error: article object malformed', () => {
+        const newArticle = { author: "icellusedkars", topic: 'cats', body: "This article is great!" }
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
 })
-/*
-
-Request body accepts:
-
-an object with the following properties:
-author - refs users
-title
-body
-topic -refs topics
-article_img_url - will default if not provided
-Responds with:
-
-the newly added article, with all the above properties, as well as:
-article_id
-votes
-created_at
-comment_count
-*/
-
 
 describe('/api/articles/:article_id/comments', () => {
     test('POST 201 - post a comment to an article', () => {
