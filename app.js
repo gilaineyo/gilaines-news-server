@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const { getTopics, getArticleById, getEndpoints, getArticles, getCommentsByArticle, postComment, patchArticleById, getUsers, deleteComment } = require('./controllers/app.controllers')
+const { getTopics, getArticleById, getEndpoints, getArticles, getCommentsByArticle, postComment, patchArticleById, getUsers, deleteComment, getUserByUsername } = require('./controllers/app.controllers')
 const { handleServerErrors, handleBadPaths, handlePsqlErrors, handleCustomErrors } = require('./error-handlers/errors')
 
 const apiRouter = require('./routers/api-router');

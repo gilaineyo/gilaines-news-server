@@ -1,4 +1,4 @@
-const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, selectSingleArticleWithComments } = require('../models/app.models')
+const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, selectSingleUser } = require('../models/app.models')
 const { checkArticleExists, checkTopicExists } = require('../models/check.models')
 
 
@@ -79,8 +79,8 @@ exports.postComment = (req, res, next) => {
 
 exports.getUsers = (req, res, next) => {
     return selectUsers()
-    .then((result) => {
-        res.status(200).send({ users: result })
+    .then((users) => {
+        res.status(200).send({ users: users })
     })
     .catch(next)
 }
@@ -90,6 +90,15 @@ exports.deleteComment = (req, res, next) => {
     return removeComment(comment_id)
     .then(() => {
         res.status(204).send()
+    })
+    .catch(next)
+}
+
+exports.getUserByUsername = (req, res, next) => {
+    const { username } = req.params
+    return selectSingleUser(username)
+    .then((user) => {
+        res.status(200).send({ user: user })
     })
     .catch(next)
 }

@@ -59,7 +59,7 @@
         [
           {
             "comment_id": 9,
-            "body": "git push origin master",
+            "body": "never gonna give you up",
             "votes": 0,
             "author": "icellusedkars",
             "article_id": 3,
@@ -123,10 +123,22 @@
           "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4" 
         }
       ]
-    },           
+    },
+    "GET /api/users/:username": {
+      "description": "serves a specified user",
+      "queries": [],
+      "exampleResponse": {
+        "user": 
+          { 
+            "username": "butter_bridge", 
+            "name": "jonny",
+            "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg" 
+          }
+        }
+      },            
   "DELETE /api/comments/:comment_id": {
     "description": "deletes specified comment",
     "queries": []
+    }
   }
-}
 }
