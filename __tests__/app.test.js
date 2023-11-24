@@ -358,6 +358,14 @@ describe('/api/users/:username', () => {
             expect(avatar_url).toBe('https://avatars2.githubusercontent.com/u/24394918?s=400&v=4')
         })
     })
+    test('GET 404 - username does not exist', () => {
+        return request(app)
+        .get('/api/users/gregdavies')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('User not found')
+        })
+    })
 })
 
 describe('/api/comments/:comment_id', () => {

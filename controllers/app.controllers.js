@@ -95,11 +95,10 @@ exports.deleteComment = (req, res, next) => {
 }
 
 exports.getUserByUsername = (req, res, next) => {
-    console.log('in the controller')
     const { username } = req.params
     return selectSingleUser(username)
     .then((user) => {
         res.status(200).send({ user: user })
     })
-
+    .catch(next)
 }
