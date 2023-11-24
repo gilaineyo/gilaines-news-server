@@ -4,6 +4,7 @@ const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const testData = require('../db/data/test-data/index')
 const endpointFile = require('../endpoints.json')
+const { selectArticles } = require('../models/app.models')
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -272,6 +273,76 @@ describe('/api/articles', () => {
             expect(body.msg).toBe('Topic does not exist')
         })
     })
+    test('GET 200 - sorts articles by author column', () => {
+        return request(app)
+        .get('/api/articles?sort_by=author')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(13)
+            expect(articles).toBeSortedBy('author', { descending: true })
+        })
+    })
+    test('GET 200 - sort articles by votes column (asc)', () => {
+        return request(app)
+        .get('/api/articles?sort_by=votes&order=asc')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(13)
+            expect(articles).toBeSortedBy('votes', { descending: false, coerce: true })
+        }) 
+    })
+    test('GET 200 - sort articles by topic column', () => {
+        return request(app)
+        .get('/api/articles?sort_by=topic')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(13)
+            expect(articles).toBeSortedBy('topic', { descending: true })
+        })
+    })
+    test('GET 200 - sort articles by title (asc)', () => {
+        return request(app)
+        .get('/api/articles?sort_by=title&order=asc')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(13)
+            expect(articles).toBeSortedBy('title')
+        })
+    })
+    test('GET 200 - sort articles by article_img_url (asc)', () => {
+        return request(app)
+        .get('/api/articles?sort_by=article_img_url')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(13)
+            expect(articles).toBeSortedBy('article_img_url', { coerce: true })
+        })
+    })
+    test('GET 200 - sort, order and topic queries all present', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch&sort_by=author&order=asc')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(12)
+            expect(articles).toBeSortedBy('author')
+        })
+    })
+    test('GET 200 - default to created_at desc if sort_by or order value is invalid', () => {
+        return request(app)
+        .get('/api/articles?sort_by=banana&order=8')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(13)
+            expect(articles).toBeSortedBy('created_at', { descending: true })
+        })
+    })
 })
 
 describe('/api/articles/:article_id/comments', () => {
@@ -341,6 +412,29 @@ describe('/api/users', () => {
                     avatar_url: expect.any(String)
                 })
             })
+        })
+    })
+})
+
+describe('/api/users/:username', () => {
+    test('GET 200 - responds with a user object with correct properties', () => {
+        return request(app)
+        .get('/api/users/rogersop')
+        .expect(200)
+        .then(({body}) => {
+            const { user } = body
+            const { username, name, avatar_url } = user
+            expect(username).toBe('rogersop')
+            expect(name).toBe('paul')
+            expect(avatar_url).toBe('https://avatars2.githubusercontent.com/u/24394918?s=400&v=4')
+        })
+    })
+    test('GET 404 - username does not exist', () => {
+        return request(app)
+        .get('/api/users/gregdavies')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('User not found')
         })
     })
 })

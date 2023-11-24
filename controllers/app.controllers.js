@@ -1,5 +1,6 @@
-const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, updateComment } = require('../models/app.models')
+const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, updateComment, selectSingleUser } = require('../models/app.models')
 const { checkArticleExists, checkTopicExists, checkCommentExists } = require('../models/check.models')
+
 
 
 exports.getTopics = (req, res, next) => {
@@ -37,10 +38,10 @@ exports.getCommentsByArticle = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    const { topic } = req.query
+    const { topic, sort_by='created_at', order='desc' } = req.query
     return checkTopicExists(topic)
     .then(() => {
-        return selectArticles(topic)
+        return selectArticles(topic, sort_by, order)
     })
     .then((results) => {
         res.status(200).send({ articles: results })
@@ -79,8 +80,8 @@ exports.postComment = (req, res, next) => {
 
 exports.getUsers = (req, res, next) => {
     return selectUsers()
-    .then((result) => {
-        res.status(200).send({ users: result })
+    .then((users) => {
+        res.status(200).send({ users: users })
     })
     .catch(next)
 }
@@ -103,6 +104,15 @@ exports.patchComment = (req, res, next) => {
     })
     .then((comment) => {
         res.status(200).send({ comment: comment })
+    })
+    .catch(next)
+}
+
+exports.getUserByUsername = (req, res, next) => {
+    const { username } = req.params
+    return selectSingleUser(username)
+    .then((user) => {
+        res.status(200).send({ user: user })
     })
     .catch(next)
 }
