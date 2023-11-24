@@ -40,7 +40,8 @@ exports.selectArticleComments = (article_id) => {
     })
 }
 
-exports.selectArticles = (topic) => {
+exports.selectArticles = (topic, sort_by, order) => {
+    const validQueries = ['title', 'topic', 'author', 'created_at', 'votes', 'article_img_url']
     const queryValues = []
     let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) AS comment_count
         FROM articles
@@ -52,8 +53,19 @@ exports.selectArticles = (topic) => {
         queryValues.push(topic)
     }
     
-    queryString += `GROUP BY articles.article_id
-        ORDER BY articles.created_at DESC;`
+    queryString += `GROUP BY articles.article_id `
+    
+    if (validQueries.includes(sort_by)) {
+        queryString += `ORDER BY ${sort_by} `
+    } else {
+        queryString += `ORDER BY created_at `
+    }
+
+    if (order === 'asc') {
+        queryString += `ASC;`
+    } else {
+        queryString += `DESC;`
+    }
 
     return db.query(queryString, queryValues)
     .then(({rows}) => {
