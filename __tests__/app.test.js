@@ -345,6 +345,21 @@ describe('/api/users', () => {
     })
 })
 
+describe('/api/users/:username', () => {
+    test('GET 200 - responds with a user object with correct properties', () => {
+        return request(app)
+        .get('/api/users/rogersop')
+        .expect(200)
+        .then(({body}) => {
+            const { user } = body
+            const { username, name, avatar_url } = user
+            expect(username).toBe('rogersop')
+            expect(name).toBe('paul')
+            expect(avatar_url).toBe('https://avatars2.githubusercontent.com/u/24394918?s=400&v=4')
+        })
+    })
+})
+
 describe('/api/comments/:comment_id', () => {
     test('DELETE 204 - deletes specified comment', () => {
         return request(app)
