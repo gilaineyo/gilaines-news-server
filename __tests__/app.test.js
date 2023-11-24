@@ -343,7 +343,47 @@ describe('/api/articles', () => {
             expect(articles).toBeSortedBy('created_at', { descending: true })
         })
     })
+    test('POST 201 - new article created', () => {
+        const newArticle = { author: 'icellusedkars', title: 'my two angels', body: 'Ubik and Mopsy love each other really.', topic: 'cats', article_img_url: "https://cdn.pixabay.com/photo/2015/02/14/10/16/cat-636172_1280.jpg" }
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(201)
+        .then(({body}) => {
+            const { article } = body
+            expect(article).toMatchObject({
+                article_id: expect.any(Number),
+                author: "icellusedkars",
+                title: "my two angels",
+                body: 'Ubik and Mopsy love each other really.',
+                topic: "cats",
+                article_img_url: "https://cdn.pixabay.com/photo/2015/02/14/10/16/cat-636172_1280.jpg",
+                votes: 0,
+                created_at: expect.any(String),
+                comment_count: 0
+            })
+        })
+    })
 })
+/*
+
+Request body accepts:
+
+an object with the following properties:
+author - refs users
+title
+body
+topic -refs topics
+article_img_url - will default if not provided
+Responds with:
+
+the newly added article, with all the above properties, as well as:
+article_id
+votes
+created_at
+comment_count
+*/
+
 
 describe('/api/articles/:article_id/comments', () => {
     test('POST 201 - post a comment to an article', () => {
