@@ -552,6 +552,40 @@ describe('/api/articles/:article_id/comments', () => {
             expect(comments).toHaveLength(3)
         })
     })
+    test('GET 400 - limit specified is not a number', () => {
+        return request(app)
+        .get('/api/articles/1/comments?limit=banana')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('GET 400 - page specified is not a number', () => {
+        return request(app)
+        .get('/api/articles/1/comments?p=banana')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('GET 200 - returns all comments when limit is higher than total', () => {
+        return request(app)
+        .get('/api/articles/1/comments?limit=15')
+        .expect(200)
+        .then(({body}) => {
+            const { comments } = body
+            expect(comments).toHaveLength(11)
+        })
+    })
+    test('GET 200 - responds with an empty array if the page number is higher than the number of comments allows', () => {
+        return request(app)
+        .get('/api/articles/1/comments?p=5')
+        .expect(200)
+        .then(({body}) => {
+            const { comments } = body
+            expect(comments).toEqual([])
+        })
+    })
 })
 
 describe('/api/users', () => {
