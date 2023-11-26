@@ -442,6 +442,41 @@ describe('/api/articles', () => {
             expect(articles).toHaveLength(5)
         })
     })
+    test('GET 400 - limit is not a number', () => {
+        return request(app)
+        .get('/api/articles?limit=banana')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('GET 400 - page is not a number', () => {
+        return request(app)
+        .get('/api/articles?p=banana')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('GET 200 - responds with all articles if limit higher than total count', () => {
+        return request(app)
+        .get('/api/articles?limit=50')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(13)
+        })
+    })
+    test('GET 200 - responds with an empty array and correct total count if the page number is higher than total pages', () => {
+        return request(app)
+        .get('/api/articles?p=5')
+        .expect(200)
+        .then(({body}) => {
+            const { total_count, articles } = body
+            expect(total_count).toBe('13')
+            expect(articles).toEqual([])
+        })
+    })
 })
 
 describe('/api/articles/:article_id/comments', () => {

@@ -41,26 +41,30 @@ exports.selectArticleComments = (article_id) => {
 }
 
 exports.selectArticles = (topic, sort_by, order, limit, p) => {
+    let countQueryString = `SELECT COUNT(*) AS total_count FROM articles ` 
+    const countQueryValues = []
     const validQueries = ['title', 'topic', 'author', 'created_at', 'votes', 'article_img_url']
+    if (topic) {
+        countQueryString += `WHERE articles.topic = $1;`
+        countQueryValues.push(topic)
+    }
+    const countQuery = db.query(countQueryString, countQueryValues)
     const queryValues = []
-    let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) AS comment_count, COUNT(*) OVER() as total_count
+    let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) AS comment_count
         FROM articles
         LEFT JOIN comments
-        ON comments.article_id = articles.article_id `
-    
+        ON comments.article_id = articles.article_id `    
     if (topic) {
         queryString += `WHERE articles.topic = $1 `
         queryValues.push(topic)
     }
-    
-    queryString += `GROUP BY articles.article_id `
-    
+    queryString += `GROUP BY articles.article_id `   
     if (validQueries.includes(sort_by)) {
         queryString += `ORDER BY ${sort_by} `
     } else {
         queryString += `ORDER BY created_at `
     }
-
+    
     if (order === 'asc') {
         queryString += `ASC `
     } else {
@@ -74,18 +78,10 @@ exports.selectArticles = (topic, sort_by, order, limit, p) => {
     } else {
         queryString += `LIMIT $1 OFFSET $2;`
     }
-    return db.query(queryString, queryValues)
-    .then(({rows}) => {
-        if (rows.length) {
-            const total_count = rows[0].total_count
-            const articles = rows.map((row) => {
-                delete row.total_count
-                return row
-            })
-            return [total_count, articles]
-        } else {
-            return [0, []]
-        }
+    const articleQuery = db.query(queryString, queryValues)
+    return Promise.all([countQuery, articleQuery])
+    .then(([countQuery, articleQuery]) => {
+        return { total_count: countQuery.rows[0].total_count, articles: articleQuery.rows }
     })
 }
 

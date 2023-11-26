@@ -43,8 +43,8 @@ exports.getArticles = (req, res, next) => {
     .then(() => {
         return selectArticles(topic, sort_by, order, limit, p)
     })
-    .then(([total_count, articles]) => {
-        res.status(200).send({ total_count: total_count, articles: articles })
+    .then((response) => {
+        res.status(200).send(response)
     })
     .catch(next)
 }
