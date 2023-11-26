@@ -189,6 +189,27 @@ describe('/api/articles/:article_id', () => {
             expect(body.msg).toBe('Article does not exist')
         })
     })
+    test('DELETE 204 - deletes article and respective comments', () => {
+        return request(app)
+        .delete('/api/articles/1')
+        .expect(204)
+    })
+    test('DELETE 404 - article does not exist', () => {
+        return request(app)
+        .delete('/api/articles/99999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article does not exist')
+        })
+    })
+    test('DELETE 400 - article_id incorrect format', () => {
+        return request(app)
+        .delete('/api/articles/banana')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
 })
 
 describe('/api/articles', () => {

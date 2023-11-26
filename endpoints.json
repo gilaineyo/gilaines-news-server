@@ -92,6 +92,10 @@
         }
     }
   },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes specified article and associated comments",
+    "queries": []
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "serves array of comments associated with specified article, up to specified limit or default limit of 10, with optional page query",
     "queries": ["limit", "p"],

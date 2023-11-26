@@ -1,4 +1,4 @@
-const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, updateComment, selectSingleUser, insertNewArticle, insertTopic } = require('../models/app.models')
+const { selectTopics, selectSingleArticle, readEndpoints, selectArticleComments, selectArticles, updateArticle, insertComment, selectUsers, removeComment, updateComment, selectSingleUser, insertNewArticle, insertTopic, removeArticle } = require('../models/app.models')
 const { checkArticleExists, checkTopicExists, checkCommentExists, checkUserExists } = require('../models/check.models')
 
 
@@ -138,6 +138,15 @@ exports.postTopic = (req, res, next) => {
     insertTopic(slug, description)
     .then((topic) => {
         res.status(201).send({ topic: topic })
+    })
+    .catch(next)
+}
+
+exports.deleteArticle = (req, res, next) => {
+    const { article_id } = req.params
+    return removeArticle(article_id)
+    .then(() => {
+        res.status(204).send()
     })
     .catch(next)
 }
