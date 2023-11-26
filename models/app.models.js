@@ -40,10 +40,10 @@ exports.selectArticleComments = (article_id) => {
     })
 }
 
-exports.selectArticles = (topic, sort_by, order) => {
+exports.selectArticles = (topic, sort_by, order, limit, p) => {
     const validQueries = ['title', 'topic', 'author', 'created_at', 'votes', 'article_img_url']
     const queryValues = []
-    let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) AS comment_count
+    let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) AS comment_count, COUNT(*) OVER() as total_count
         FROM articles
         LEFT JOIN comments
         ON comments.article_id = articles.article_id `
@@ -62,14 +62,30 @@ exports.selectArticles = (topic, sort_by, order) => {
     }
 
     if (order === 'asc') {
-        queryString += `ASC;`
+        queryString += `ASC `
     } else {
-        queryString += `DESC;`
+        queryString += `DESC `
     }
-
+    const offset = limit * (p - 1)
+    queryValues.push(limit)
+    queryValues.push(offset)
+    if (queryValues.length === 3) {
+        queryString += `LIMIT $2 OFFSET $3;`
+    } else {
+        queryString += `LIMIT $1 OFFSET $2;`
+    }
     return db.query(queryString, queryValues)
     .then(({rows}) => {
-        return rows
+        if (rows.length) {
+            const total_count = rows[0].total_count
+            const articles = rows.map((row) => {
+                delete row.total_count
+                return row
+            })
+            return [total_count, articles]
+        } else {
+            return [0, []]
+        }
     })
 }
 

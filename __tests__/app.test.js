@@ -216,7 +216,7 @@ describe('/api/articles', () => {
         .then(({body}) => {
             const { articles } = body
             expect(Array.isArray(articles)).toBe(true)
-            expect(articles).toHaveLength(13)
+            expect(articles).toHaveLength(10)
             expect(articles).toBeSorted('created_at', { descending: true })
             articles.forEach((article) => {
                 const keys = Object.keys(article)
@@ -279,7 +279,7 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({body}) => {
             const { articles } = body
-            expect(articles).toHaveLength(13)
+            expect(articles).toHaveLength(10)
             expect(articles).toBeSortedBy('author', { descending: true })
         })
     })
@@ -289,7 +289,7 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({body}) => {
             const { articles } = body
-            expect(articles).toHaveLength(13)
+            expect(articles).toHaveLength(10)
             expect(articles).toBeSortedBy('votes', { descending: false, coerce: true })
         }) 
     })
@@ -299,7 +299,7 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({body}) => {
             const { articles } = body
-            expect(articles).toHaveLength(13)
+            expect(articles).toHaveLength(10)
             expect(articles).toBeSortedBy('topic', { descending: true })
         })
     })
@@ -309,7 +309,7 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({body}) => {
             const { articles } = body
-            expect(articles).toHaveLength(13)
+            expect(articles).toHaveLength(10)
             expect(articles).toBeSortedBy('title')
         })
     })
@@ -319,7 +319,7 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({body}) => {
             const { articles } = body
-            expect(articles).toHaveLength(13)
+            expect(articles).toHaveLength(10)
             expect(articles).toBeSortedBy('article_img_url', { coerce: true })
         })
     })
@@ -329,7 +329,7 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({body}) => {
             const { articles } = body
-            expect(articles).toHaveLength(12)
+            expect(articles).toHaveLength(10)
             expect(articles).toBeSortedBy('author')
         })
     })
@@ -339,7 +339,7 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({body}) => {
             const { articles } = body
-            expect(articles).toHaveLength(13)
+            expect(articles).toHaveLength(10)
             expect(articles).toBeSortedBy('created_at', { descending: true })
         })
     })
@@ -403,6 +403,43 @@ describe('/api/articles', () => {
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('GET 200 - accepts a limit query and responds with limited results', () => {
+        return request(app)
+        .get('/api/articles?limit=11')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(11)
+        })
+    })
+    test('GET 200 - responds with 10 results if limit not specified', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(10)
+        })
+    })
+    test('GET 200 - accepts a p query to paginate results', () => {
+        return request(app)
+        .get('/api/articles?limit=5&p=3')
+        .expect(200)
+        .then(({body}) => {
+            const { articles } = body
+            expect(articles).toHaveLength(3)
+        })
+    })
+    test('GET 200 - responds with a total count property', () => {
+        return request(app)
+        .get('/api/articles?limit=5&p=2')
+        .expect(200)
+        .then(({body}) => {
+            const { articles, total_count } = body
+            expect(total_count).toBe('13')
+            expect(articles).toHaveLength(5)
         })
     })
 })

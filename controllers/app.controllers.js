@@ -38,13 +38,13 @@ exports.getCommentsByArticle = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    const { topic, sort_by='created_at', order='desc' } = req.query
+    const { topic, sort_by='created_at', order='desc', limit=10, p=1 } = req.query
     return checkTopicExists(topic)
     .then(() => {
-        return selectArticles(topic, sort_by, order)
+        return selectArticles(topic, sort_by, order, limit, p)
     })
-    .then((results) => {
-        res.status(200).send({ articles: results })
+    .then(([total_count, articles]) => {
+        res.status(200).send({ total_count: total_count, articles: articles })
     })
     .catch(next)
 }
