@@ -9,6 +9,12 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "adds a new topic",
+    "queries": [],
+    "exampleRequest": { "slug": "plants", "description": "all things botanical" },
+    "exampleResponse": { "topic": { "slug": "plants", "description": "all things botanical" }} 
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles, limited to 10, displaying page 1, and sorted in descending order of created_at date by default",
     "queries": ["author", "topic", "sort_by", "order", "limit", "p"],

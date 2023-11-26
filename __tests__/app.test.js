@@ -26,6 +26,36 @@ describe('/api/topics', () => {
             })
         })
     })
+    test('POST 201 - new topic added', () => {
+        return request(app)
+        .post('/api/topics')
+        .send({ slug: "hockey", description: "ice hockey"})
+        .expect(201)
+        .then(({body}) => {
+            const { topic } = body
+            const { slug, description } = topic
+            expect(slug).toBe('hockey')
+            expect(description).toBe('ice hockey')
+        })
+    })
+    test('POST 400 - topic request malformed', () => {
+        return request(app)
+        .post('/api/topics')
+        .send({ description: 'lonegunmen' })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+    test('POST 400 - topic slug already exists', () => {
+        return request(app)
+        .post('/api/topics')
+        .send({ slug: 'cats', description: 'all about cats' })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Already exists')
+        })
+    })
 })
 
 describe('/api', () => {
