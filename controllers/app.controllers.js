@@ -28,7 +28,8 @@ exports.getEndpoints = (req, res, next) => {
 
 exports.getCommentsByArticle = (req, res, next) => {
     const { article_id } = req.params
-    const commentsPromises = [selectArticleComments(article_id), checkArticleExists(article_id)]
+    const { limit=10, p=1 } = req.query
+    const commentsPromises = [selectArticleComments(article_id, limit, p), checkArticleExists(article_id)]
     return Promise.all(commentsPromises)
     .then((resolvedPromises) => {
         const result = resolvedPromises[0]

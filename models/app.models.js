@@ -30,11 +30,13 @@ exports.readEndpoints = () => {
     })
 }
 
-exports.selectArticleComments = (article_id) => {
+exports.selectArticleComments = (article_id, limit, p) => {
+    const offset = limit * (p - 1)
     return db.query(`SELECT * FROM comments
         WHERE article_id = $1
         ORDER BY created_at DESC
-        ;`, [article_id])
+        LIMIT $2 OFFSET $3
+        ;`, [article_id, limit, offset])
     .then(({rows}) => {
         return rows
     })
